@@ -2,15 +2,46 @@
 'use strict';
 document.body.classList.add('js');
 const storage = {get(k,d){try{return localStorage.getItem('lugy-'+k)||d;}catch(e){return d;}},set(k,v){try{localStorage.setItem('lugy-'+k,String(v));}catch(e){}}};
-const theme=document.querySelector('#theme'),system=matchMedia('(prefers-color-scheme: dark)');
-function applyTheme(value){document.documentElement.dataset.theme=value;const resolved=value==='auto'?(system.matches?'dark':'light'):value;document.documentElement.dataset.resolved=resolved;document.querySelector('meta[name="theme-color"]').content=resolved==='dark'?'#171c1a':'#f5f1e9';}
-if(theme){theme.value=storage.get('theme','auto');applyTheme(theme.value);theme.addEventListener('change',()=>{storage.set('theme',theme.value);applyTheme(theme.value);});system.addEventListener('change',()=>{if(theme.value==='auto')applyTheme('auto');});}
 const menu=document.querySelector('.menu-toggle'),nav=document.querySelector('#main-nav');
 if(menu&&nav)menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));nav.classList.toggle('is-open',open);menu.textContent=open?'收起':'菜单';});
 const progress=document.querySelector('.reading-progress');let scheduled=false;
 function updateProgress(){const height=document.documentElement.scrollHeight-innerHeight;progress.style.width=(height>0?Math.min(100,scrollY/height*100):0)+'%';scheduled=false;}
 if(progress){addEventListener('scroll',()=>{if(!scheduled){scheduled=true;requestAnimationFrame(updateProgress);}},{passive:true});addEventListener('resize',updateProgress);updateProgress();}
-const motion=document.querySelector('#motion-toggle');if(motion)motion.addEventListener('click',()=>{const paused=!document.body.classList.contains('motion-paused');document.body.classList.toggle('motion-paused',paused);motion.setAttribute('aria-pressed',String(paused));motion.textContent=paused?'继续滚动':'暂停滚动';});
+const marquee = document.querySelector('.marquee');
+if (marquee) {
+  const track = marquee.querySelector('.marquee-track');
+  const group = track.querySelector('.marquee-group');
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const pixelsPerSecond = 42;
+
+  function updateMarquee() {
+    if (reducedMotion.matches) {
+      marquee.classList.remove('is-running');
+      track.querySelectorAll('[aria-hidden="true"].marquee-group').forEach(copy => copy.remove());
+      return;
+    }
+
+    marquee.classList.add('is-running');
+    const cycleWidth = group.getBoundingClientRect().width;
+    if (!cycleWidth) return;
+
+    const groupCount = Math.ceil(marquee.clientWidth / cycleWidth) + 1;
+    while (track.children.length > groupCount) track.lastElementChild.remove();
+    while (track.children.length < groupCount) {
+      const copy = group.cloneNode(true);
+      copy.setAttribute('aria-hidden', 'true');
+      track.append(copy);
+    }
+    track.style.setProperty('--marquee-distance', -cycleWidth + 'px');
+    track.style.setProperty('--marquee-duration', cycleWidth / pixelsPerSecond + 's');
+  }
+
+  const observer = new ResizeObserver(updateMarquee);
+  observer.observe(marquee);
+  observer.observe(group);
+  reducedMotion.addEventListener('change', updateMarquee);
+  updateMarquee();
+}
 const print=document.querySelector('#print-resume');if(print)print.addEventListener('click',()=>window.print());
 if(document.body.dataset.page!=='playground')return;
 const board=document.querySelector('#memory-board'),memoryStatus=document.querySelector('#memory-score'),pauseButton=document.querySelector('#memory-pause'),memoryResult=document.querySelector('#memory-result');
