@@ -1,20 +1,6 @@
 (() => {
 'use strict';
 const storage = {get(k,d){try{return localStorage.getItem('lugy-'+k)||d;}catch(e){return d;}},set(k,v){try{localStorage.setItem('lugy-'+k,String(v));}catch(e){}}};
-const photoLink = document.querySelector('.life-image');
-const photoDialog = document.querySelector('.life-dialog');
-if (photoLink && typeof photoDialog?.showModal === 'function') {
-  const fullPhoto = photoDialog.querySelector('img');
-  photoLink.addEventListener('click', event => {
-    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-    event.preventDefault();
-    fullPhoto.src = photoLink.href;
-    photoDialog.showModal();
-  });
-  photoDialog.addEventListener('click', event => {
-    if (event.target === photoDialog) photoDialog.close();
-  });
-}
 const progress=document.querySelector('.reading-progress');let scheduled=false;
 function updateProgress(){const height=document.documentElement.scrollHeight-innerHeight;progress.style.width=(height>0?Math.min(100,scrollY/height*100):0)+'%';scheduled=false;}
 if(progress){addEventListener('scroll',()=>{if(!scheduled){scheduled=true;requestAnimationFrame(updateProgress);}},{passive:true});addEventListener('resize',updateProgress);updateProgress();}
