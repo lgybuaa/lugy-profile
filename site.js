@@ -39,6 +39,26 @@ if (marquee) {
   reducedMotion.addEventListener('change', updateMarquee);
   updateMarquee();
 }
+const photoViewer = document.querySelector('.context-viewer');
+if (typeof photoViewer?.showModal === 'function') {
+  const photo = document.createElement('img');
+  photoViewer.append(photo);
+
+  for (const thumbnail of document.querySelectorAll('a.context-photo')) {
+    thumbnail.setAttribute('aria-haspopup', 'dialog');
+    thumbnail.addEventListener('click', event => {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      photo.alt = thumbnail.querySelector('img').alt;
+      photo.src = thumbnail.href;
+      photoViewer.showModal();
+    });
+  }
+
+  photoViewer.addEventListener('click', event => {
+    if (event.target === photoViewer) photoViewer.close();
+  });
+}
 const print=document.querySelector('#print-resume');if(print)print.addEventListener('click',()=>window.print());
 if(document.body.dataset.page!=='playground')return;
 const board=document.querySelector('#memory-board'),memoryStatus=document.querySelector('#memory-score'),pauseButton=document.querySelector('#memory-pause'),memoryResult=document.querySelector('#memory-result');

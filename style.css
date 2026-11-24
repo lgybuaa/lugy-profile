@@ -233,11 +233,13 @@ h3 { font-weight: 600; }
   row-gap: clamp(1.8rem, 4vw, 2.5rem);
 }
 .context-photo {
+  display: block;
   aspect-ratio: 370 / 217;
   margin-bottom: 1rem;
   overflow: hidden;
   border-radius: .35rem;
   background: var(--soft);
+  cursor: zoom-in;
 }
 .context-photo img {
   display: block;
@@ -265,6 +267,40 @@ h3 { font-weight: 600; }
   margin-bottom: .2rem;
   font-size: .9rem;
   font-variant-numeric: tabular-nums;
+}
+.context-viewer {
+  width: fit-content;
+  max-width: calc(100% - 1rem);
+  max-height: calc(100% - 1rem);
+  padding: .65rem;
+  border: 1px solid var(--line);
+  border-radius: .4rem;
+  background: var(--surface);
+  color: var(--ink);
+}
+.context-viewer:not([open]) { display: none; }
+.context-viewer::backdrop { background: #141a18e6; }
+.context-viewer-tools {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: .5rem;
+}
+.context-viewer-tools button {
+  min-height: 2.75rem;
+  padding: .35rem .8rem;
+  border: 1px solid var(--line);
+  border-radius: .35rem;
+  color: var(--ink);
+  background: var(--soft);
+}
+.context-viewer img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100dvh - 5.5rem);
+  margin-inline: auto;
+  object-fit: contain;
 }
 
 .strata-content .paper {
